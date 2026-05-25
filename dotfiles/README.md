@@ -1,40 +1,40 @@
-## Host
+# Setup homelab
+
+## Host Setup
 - Install Ollama
-- Install WSL 2 (Powershell/Command Prompt as Administrator)
-  - Run setup.ps1
+- Install WSL 2 *(Powershell/Command Prompt as Administrator)*
+  - ```.\install.ps1```
     - Verify if below steps are needed
       ```
-        wsl --install
-        wsl --list --online
-        wsl --install -d Ubuntu-26.04
-        wsl --status
-        wsl --list --verbose
+      wsl --install
+      wsl --list --online
+      wsl --install -d Ubuntu-26.04
+      wsl --status
+      wsl --list --verbose
+      wsl --setdefault Ubuntu-26.04
       ```
-- Install Docker
+- Install Docker (optional)
+  - Settings → Resources → CPUs + Memory slightly higher than WSL’s own limits *(e.g., 6‑8 GB)*.
+- Install VS Code
+
+### Reset
 
 ## WSL2
+- Setup
+  - ```
+    # Clone the homelab repository
+    cd ~
+    mkdir -p playground/{git-repo,other-repo,incubator}
+    cd playground/git-repo
+    git clone https://github.com/mukeshsingla/homelab.git
+    cd homelab/dotfiles
+    ./install.sh
+    ```
 - Run from linux prompt but make sure ollama is running
   - ```
-      cd ~/playground/
-      claude --model qwen3.5:9b
+    cd ~/playground/
+    claude --model qwen3.5:9b
     ```
-
-### Post-install performance/usability tweaks
-- WSL/filesystem
-  - Edit ```%USERPROFILE%\.wslconfig``` (Windows) to tune WSL:
-    - ```
-        [wsl2]
-        memory=8GB
-        processors=4
-        swap=8GB
-        localhostForwarding=true
-      ```
-  - For heavy workloads:
-      - Keep “hot” projects inside WSL (```/home/$USER/src```) rather than ```/mnt/c/...``` to avoid slower win‑fs bind mounts.
-- Docker
-  - Settings → Resources → CPUs + Memory slightly higher than WSL’s own limits (e.g., 6‑8 GB).
-
-
 
 ### VS Code (Remote-WSL)
 1. Open VS Code.
@@ -44,13 +44,42 @@
 5. Install plugins:
    1. Markdown All in One
    2. Python
-6. Setup Copilot to use Ollama model
+6. Setup Copilot to use Ollama model - qwen3.5:9b
+
+### Reset
+  - Take backup, before resetting
+  - Powershell/Command Prompt *(as Administrator)*
+    - ```wsl --unregister <distro_name>```
+  - From Windows
+    - **System > System Components > Windows Subsystem for Linux > Advanced Options > Reset**
+  - Reinstall from the Microsoft Store, or launch it again if your setup uses the Store app
 
 ## Docker
 - Pull and run docker containers
-```
-cd F:\development\docker\homelab\docker-compose.yml
-docker compose -f docker-compose.yml up -d
-```
+  - ```
+      cd F:\development\docker\homelab\docker-compose.yml
+      docker compose -f docker-compose.yml up -d
+    ```
+- Restarting a service *(defined in docker-compose.yml)* from docker containers
+  - ```docker compose up -d --no-deps <service_name>```
 - For removing all containers
     - ```docker compose down --volumes```
+
+## Development
+
+### Python
+
+#### Setup
+- Create virtual env
+  - ```
+    python3 -m venv myproject
+    source myproject/bin/activate'''
+- Now install packages inside the env:
+  - ```
+    pip install requests
+    deactivate
+    ```
+
+#### Teardown
+- ```deactivate```
+- ```rm -r venv```
