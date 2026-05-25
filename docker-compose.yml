@@ -1,0 +1,201 @@
+# More info at https://github.com/pi-hole/docker-pi-hole/ and https://docs.pi-hole.net/
+services:
+  pihole:
+    container_name: hl-pihole
+    image: pihole/pihole:latest
+    networks:
+      - hl-proxy-net
+    ports:
+      # DNS Ports
+      - "53:53/tcp"
+      - "53:53/udp"
+      # Default HTTP Port
+      # - "9080:80/tcp"
+      # Default HTTPs Port. FTL will generate a self-signed certificate
+      # - "9443:443/tcp"
+      # Uncomment the below if using Pi-hole as your DHCP Server
+      #- "67:67/udp"
+      # Uncomment the line below if you are using Pi-hole as your NTP server
+      #- "123:123/udp"
+    environment:
+      # Set the appropriate timezone for your location from
+      # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones, e.g:
+      TZ: 'America/Toronto'
+      # Set a password to access the web interface. Not setting one will result in a random password being assigned
+      FTLCONF_webserver_api_password: 'p1H0l3'
+      # If using Docker's default `bridge` network setting the dns listening mode should be set to 'ALL'
+      FTLCONF_dns_listeningMode: 'ALL'
+    # Volumes store your data between container upgrades
+    volumes:
+      # For persisting Pi-hole's databases and common configuration file
+      - 'F:\docker\volumes\pi-hole:/etc/pihole'
+      # Uncomment the below if you have custom dnsmasq config files that you want to persist. Not needed for most starting fresh with Pi-hole v6. If you're upgrading from v5 you and have used this directory before, you should keep it enabled for the first v6 container start to allow for a complete migration. It can be removed afterwards. Needs environment variable FTLCONF_misc_etc_dnsmasq_d: 'true'
+      #- './etc-dnsmasq.d:/etc/dnsmasq.d'
+    cap_add:
+      # See https://docs.pi-hole.net/docker/configuration/#note-on-capabilities
+      # Required if you are using Pi-hole as your DHCP server, else not needed
+      - NET_ADMIN
+      # Required if you are using Pi-hole as your NTP client to be able to set the host's system time
+      - SYS_TIME
+      # Optional, if Pi-hole should get some more processing time
+      - SYS_NICE
+    deploy:
+      resources:
+        limits:
+          cpus: 0.5
+          memory: 512M
+        reservations:
+          cpus: 0.25
+          memory: 256M
+    restart: unless-stopped
+
+  nginx-proxy-manager:
+    image: 'jc21/nginx-proxy-manager:latest'
+    container_name: hl-nginx-proxy-manager
+    networks:
+      - hl-proxy-net
+    ports:
+      - '80:80'    # Public HTTP Port
+      - '443:443'  # Public HTTPS Port
+      # - '9081:81'    # Admin Web Port
+    volumes:
+      - F:\docker\volumes\nginx-proxy-manager\data:/data
+      - F:\docker\volumes\nginx-proxy-manager\letsencrypt:/etc/letsencrypt
+    restart: unless-stopped
+
+  searxng:
+    container_name: hl-searxng
+    image: searxng/searxng:latest
+    networks:
+      - hl-proxy-net
+    deploy:
+      resources:
+        limits:
+          cpus: 0.5
+          memory: 512M
+        reservations:
+          cpus: 0.25
+          memory: 256M
+    # ports:
+    #   - "8001:8080/tcp"
+    environment:
+      # Set the appropriate timezone for your location from
+      # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones, e.g:
+      TZ: 'America/Toronto'
+    volumes:
+      - 'F:\docker\volumes\searxng:/etc/searxng'
+      - 'F:\docker\volumes\searxng\data:/var/cache/searxng'
+    restart: unless-stopped
+  
+  vane:
+    container_name: hl-vane
+    image: itzcrazykns1337/vane:latest
+    networks:
+      - hl-proxy-net
+    deploy:
+      resources:
+        limits:
+          cpus: 1.0
+          memory: 1G
+        reservations:
+          cpus: 0.5
+          memory: 512M
+    # ports:
+    #   - "8002:3000/tcp"
+    environment:
+      # Set the appropriate timezone for your location from
+      # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones, e.g:
+      TZ: 'America/Toronto'
+    volumes:
+      - 'F:\docker\volumes\vane:/home/vane/data'
+    restart: unless-stopped
+
+  obsidian:
+    container_name: hl-obsidian
+    image: ghcr.io/linuxserver/obsidian:latest
+    networks:
+      - hl-proxy-net
+    deploy:
+      resources:
+        limits:
+          cpus: 1.0
+          memory: 1G
+        reservations:
+          cpus: 0.5
+          memory: 512M
+    security_opt:
+      - no-new-privileges:false
+      - seccomp:unconfined
+    healthcheck:
+      test: timeout 10s bash -c ':> /dev/tcp/127.0.0.1/3000' || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 90s
+    ports:
+      - "8003:3000/tcp"
+    shm_size: "2gb"
+    environment:
+      # Set the appropriate timezone for your location from
+      # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones, e.g:
+      TZ: 'America/Toronto'
+      CUSTOM_USER: msingla
+      PASSWORD: msingla
+      # PUID: 1000
+      # PGID: 1000
+    volumes:
+      - 'F:\docker\volumes\obsidian:/home/obsidian/data'
+      - 'F:\docker\volumes\obsidian\_data:/config'
+    restart: unless-stopped
+
+  miniflux:
+    container_name: hl-miniflux
+    image: miniflux/miniflux:latest
+    networks:
+      - hl-proxy-net
+    ports:
+      - "8004:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - TZ='America/Toronto'
+      - DATABASE_URL=postgres://miniflux:secret@db/miniflux?sslmode=disable
+      - RUN_MIGRATIONS=1
+      - CREATE_ADMIN=1
+      - ADMIN_USERNAME=admin
+      - ADMIN_PASSWORD=M1n1flux
+      - BASE_URL=http://miniflux.home.lab/
+    healthcheck:
+      test: ["CMD", "/usr/bin/miniflux", "-healthcheck", "auto"]
+    restart: unless-stopped
+
+  db:
+    container_name: hl-miniflux-db
+    image: postgres:18
+    networks:
+      - hl-proxy-net
+    environment:
+      - TZ='America/Toronto'
+      - POSTGRES_USER=miniflux
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=miniflux
+    volumes:
+      # You may have to adjust the volume path depending on the version of Postgres
+      # Postgres 18 uses /var/lib/postgresql
+      # Postgres 17 and below uses /var/lib/postgresql/data
+      # See https://hub.docker.com/_/postgres#pgdata
+      - miniflux-db:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "miniflux"]
+      interval: 10s
+      start_period: 30s
+    restart: unless-stopped
+
+networks:
+  hl-proxy-net:
+    external: true
+
+volumes:
+  miniflux-db:
+    external: true
