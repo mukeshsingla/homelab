@@ -9,6 +9,12 @@ echo 'export ANTHROPIC_BASE_URL=http://192.168.0.100:11434' >> ~/.bashrc
 
 source ~/.bashrc
 
+git config --global user.name "Mukesh Singla"
+git config --global user.email "er.mukesh.singla@gmail.com"
+git config --global init.defaultBranch main
+git config --global core.editor "code --wait"
+git config --global core.autocrlf input
+
 curl http://192.168.0.100:11434/api/tags
 
 curl -fsSL https://claude.ai/install.sh | bash

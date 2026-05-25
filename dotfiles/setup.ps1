@@ -1,3 +1,5 @@
+wsl --update
+wsl --install Ubuntu-26.04
 
 [System.Environment]::SetEnvironmentVariable("OLLAMA_HOST", "0.0.0.0:11434", "Machine")
 [System.Environment]::SetEnvironmentVariable("OLLAMA_ORIGINS", "*", "Machine")
@@ -12,5 +14,3 @@
 
 # [System.Environment]::SetEnvironmentVariable("OLLAMA_SCHED_SPREAD", "1", "Machine")
 
-wsl --update
-wsl --install Ubuntu-26.04

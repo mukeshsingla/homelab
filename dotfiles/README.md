@@ -1,26 +1,34 @@
 ## Host
 - Install Ollama
-- Open Administrator Powershell
-    - Run setup.ps1
+- Install WSL 2 (Powershell/Command Prompt as Administrator)
+  - Run setup.ps1
+    - Verify if below steps are needed
+      ```
+        wsl --install
+        wsl --list --online
+        wsl --install -d Ubuntu-26.04
+        wsl --status
+        wsl --list --verbose
+      ```
 - Install Docker
 
 ## WSL2
 - Run from linux prompt but make sure ollama is running
-```
-cd ~/playground/
-claude --model qwen3.5:9b
-```
+  - ```
+      cd ~/playground/
+      claude --model qwen3.5:9b
+    ```
 
 ### Post-install performance/usability tweaks
 - WSL/filesystem
   - Edit ```%USERPROFILE%\.wslconfig``` (Windows) to tune WSL:
-```
-[wsl2]
-memory=8GB
-processors=4
-swap=8GB
-localhostForwarding=true
-```
+    - ```
+        [wsl2]
+        memory=8GB
+        processors=4
+        swap=8GB
+        localhostForwarding=true
+      ```
   - For heavy workloads:
       - Keep “hot” projects inside WSL (```/home/$USER/src```) rather than ```/mnt/c/...``` to avoid slower win‑fs bind mounts.
 - Docker
