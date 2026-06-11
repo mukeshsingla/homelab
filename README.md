@@ -46,6 +46,7 @@
 5. Install plugins:
    1. Markdown All in One
    2. Python
+   3. Java
 6. Setup Copilot to use Ollama model - qwen3.5:9b
 
 ### Reset
