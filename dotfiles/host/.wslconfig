@@ -1,6 +1,5 @@
 [wsl2]
 memory=16GB
 processors=16
-swap=16GB
-networkingMode=mirrored
-localhostForwarding=true
+swap=2GB
+

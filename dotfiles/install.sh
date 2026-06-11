@@ -41,7 +41,7 @@ cat ~/playground/git-repo/homelab/dotfiles/wsl/.bashrc >> ~/.bashrc
 source ~/.bashrc
 
 # Test the connection to the Ollama API
-curl http://localhost:11434/api/tags
+curl http://192.168.0.100:11434/api/tags
 
 # Install Claude CLI tool
 curl -fsSL https://claude.ai/install.sh | bash
@@ -54,4 +54,4 @@ fi
 # Source the updated .bashrc to apply the changes immediately
 source ~/.bashrc
 
-cp ~/playground/git-repo/homelab/host/.wslconfig /mnt/c/Users/mukes/.wslconfig
+cp ~/playground/git-repo/homelab/dotfiles/host/.wslconfig /mnt/c/Users/mukes/.wslconfig
