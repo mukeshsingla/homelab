@@ -55,15 +55,23 @@
   - Reinstall from the Microsoft Store, or launch it again if your setup uses the Store app
 
 ## Docker
+- Setup network
+  - ```docker network create hl-proxy-net```
+- Setup volume
+  - ```docker volume create miniflux-db```
 - Pull and run docker containers
   - ```
-      cd F:\development\docker\homelab\docker-compose.yml
+      cd F:\development\docker\homelab\
       docker compose -f docker-compose.yml up -d
     ```
 - Restarting a service *(defined in docker-compose.yml)* from docker containers
   - ```docker compose up -d --no-deps <service_name>```
 - For removing all containers
     - ```docker compose down --volumes```
+
+## Ollama
+- ```ollama create gemma4-opt -f .\ModelFile.gemma```
+- ```ollama show --modelfile qwen3.5:9b```
 
 ## Development
 
@@ -83,3 +91,11 @@
 #### Teardown
 - ```deactivate```
 - ```rm -r venv```
+
+## Host Health
+- Powershell/Command Prompt *(Adminstrator)*
+```
+DISM /Online /Cleanup-Image /RestoreHealth
+sfc /scannow
+chkdsk C: /f
+```

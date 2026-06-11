@@ -165,7 +165,10 @@ services:
       - CREATE_ADMIN=1
       - ADMIN_USERNAME=admin
       - ADMIN_PASSWORD=M1n1flux
+      # User defined environment variables for Miniflux AI integration
       - BASE_URL=http://miniflux.home.lab/
+      - FETCHER_ALLOW_PRIVATE_NETWORKS=1
+      - INTEGRATION_ALLOW_PRIVATE_NETWORKS=1
     healthcheck:
       test: ["CMD", "/usr/bin/miniflux", "-healthcheck", "auto"]
     restart: unless-stopped
@@ -191,6 +194,20 @@ services:
       interval: 10s
       start_period: 30s
     restart: unless-stopped
+
+  miniflux_ai:
+    container_name: incubator-miniflux_ai
+    image: ghcr.io/qetesh/miniflux-ai:latest
+    networks:
+      - hl-proxy-net
+    restart: unless-stopped
+    environment:
+        TZ: America/Toronto
+    volumes:
+      # - ./config.yml:/app/config.yml
+      # - ./entries.json:/app/entries.json # Provide persistent for AI news
+      - F:\development\other-repos\miniflux-ai\config.yml:/app/config.yml
+      - F:\development\other-repos\miniflux-ai\data\entries.json:/app/entries.json # Provide persistent for AI news
 
 networks:
   hl-proxy-net:
