@@ -6,12 +6,10 @@
   - ```.\install.ps1```
     - Verify if below steps are needed
       ```
-      wsl --install
       wsl --list --online
-      wsl --install -d Ubuntu-26.04
+      wsl --install
       wsl --status
       wsl --list --verbose
-      wsl --setdefault Ubuntu-26.04
       ```
 - Install Docker (optional)
   - Settings → Resources → CPUs + Memory slightly higher than WSL’s own limits *(e.g., 6‑8 GB)*.
@@ -30,6 +28,10 @@
     cd homelab/dotfiles
     ./install.sh
     ```
+  - Logout and login again
+    - ```logout```
+  - Verify docker
+    - ```sudo service docker status```
 - Run from linux prompt but make sure ollama is running
   - ```
     cd ~/playground/
