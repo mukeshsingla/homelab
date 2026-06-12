@@ -1,6 +1,8 @@
-wsl --install
+mkdir D:\WSL\Ubuntu
 wsl --update
-wsl --install Ubuntu-26.04
+wsl --install -d Ubuntu --location "D:\WSL\Ubuntu"
+wsl --status
+wsl --list --verbose
 
 [System.Environment]::SetEnvironmentVariable("OLLAMA_HOST", "0.0.0.0:11434", "Machine")
 [System.Environment]::SetEnvironmentVariable("OLLAMA_ORIGINS", "*", "Machine")
@@ -19,6 +21,6 @@ wsl --install Ubuntu-26.04
 [System.Environment]::SetEnvironmentVariable("OLLAMA_KEEP_ALIVE", "1h", "Machine")
 
 [System.Environment]::SetEnvironmentVariable("OLLAMA_KV_CACHE_TYPE", "q8_0", "Machine")
-[System.Environment]::SetEnvironmentVariable("OLLAMA_CONTEXT_LENGTH", "8192", "Machine")
+[System.Environment]::SetEnvironmentVariable("OLLAMA_CONTEXT_LENGTH", "65536", "Machine")
 
 [System.Environment]::SetEnvironmentVariable("OLLAMA_SCHED_SPREAD", "1", "Machine")

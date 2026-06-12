@@ -3,14 +3,9 @@
 ## Host Setup
 - Install Ollama
 - Install WSL 2 *(Powershell/Command Prompt as Administrator)*
+  - Copy ```.wslconfig``` to ```%USERPROFILE%``` from ```git-repo/homelab/dotfiles/host```
   - ```.\install.ps1```
-    - Verify if below steps are needed
-      ```
-      wsl --list --online
-      wsl --install
-      wsl --status
-      wsl --list --verbose
-      ```
+    - Verify output in the window
 - Install Docker (optional)
   - Settings → Resources → CPUs + Memory slightly higher than WSL’s own limits *(e.g., 6‑8 GB)*.
 - Install VS Code
@@ -30,8 +25,6 @@
     ```
   - Logout and login again
     - ```logout```
-  - Verify docker
-    - ```sudo service docker status```
 - Run from linux prompt but make sure ollama is running
   - ```
     cd ~/playground/
@@ -71,6 +64,26 @@
   - ```docker compose up -d --no-deps <service_name>```
 - For removing all containers
     - ```docker compose down --volumes```
+
+### Reset
+
+```
+# Remove Docker data directories
+Remove-Item -Path "$env:LOCALAPPDATA\Docker" -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item -Path "$env:APPDATA\Docker" -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item -Path "$env:APPDATA\Docker Desktop" -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item -Path "$env:PROGRAMDATA\Docker" -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item -Path "$env:PROGRAMDATA\DockerDesktop" -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item -Path "$env:ProgramFiles\Docker" -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item -Path "$env:USERPROFILE\.docker" -Recurse -Force -ErrorAction SilentlyContinue
+
+# Remove Docker from PATH (check your System Environment Variables)
+# Open System Properties > Environment Variables and remove Docker entries
+
+# Remove WSL Docker distributions if present
+wsl --unregister docker-desktop
+wsl --unregister docker-desktop-data
+```
 
 ## Ollama
 - ```ollama create gemma4-opt -f .\ModelFile.gemma```

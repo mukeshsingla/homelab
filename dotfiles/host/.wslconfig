@@ -1,13 +1,9 @@
 [wsl2]
-# RESOURCE MANAGEMENT
-## Cap RAM and CPU so your homelab doesn't freeze your Windows host
 memory=16GB
-processors=16
-swap=2GB
-swapFile=C:\\temp\\wsl-swap.vhdx
+processors=8
+swap=0
 
-# PERFORMANCE & DISK SETTINGS
-## Automatically releases unused RAM back to Windows
-autoMemoryReclaim=gradual
-## Speeds up container storage I/O performance
-vmIdleTimeout=60000
+networkingMode=mirrored
+dnsTunneling=true
+firewall=true
+autoProxy=true
