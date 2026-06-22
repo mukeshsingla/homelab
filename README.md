@@ -86,8 +86,8 @@ wsl --unregister docker-desktop-data
 ```
 
 ## Ollama
-- ```ollama create gemma4-opt -f .\ModelFile.gemma```
-- ```ollama show --modelfile qwen3.5:9b```
+- ```ollama create <new-model-name> -f .\ModelFile.<shortname-model-with-config>```
+- ```ollama show --modelfile <model-name>```
 
 ## Development
 

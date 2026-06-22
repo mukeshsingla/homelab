@@ -53,7 +53,7 @@ When reinstalling from scratch:
 
 **Setup initial network and volumes:**
 ```bash
-docker network create hl-proxy-net && docker volume create miniflux-db   # Required before running containers for networking/DB persistence
+docker network create hl-network && docker volume create miniflux-db   # Required before running containers for networking/DB persistence
 ```
 
 **Pull and start services defined in compose file:**  
